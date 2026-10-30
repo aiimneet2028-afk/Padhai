@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>dr.n28</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f5f1;--ink:#16302b;--mute:#5d726c;--card:#fff;--line:#d8e1dc;--acc:#e0a021;--accink:#2b1d00;--bad:#b3261e;--ok:#1f7a55;--bar:#1f7a55;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1a17;--ink:#e8f0ec;--mute:#93aaa2;--card:#15282a;--line:#27403c;--acc:#f0b43a;--accink:#2b1d00;--bad:#ff8a80;--ok:#5fd3a0;--bar:#5fd3a0;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1a17;--ink:#e8f0ec;--mute:#93aaa2;--card:#15282a;--line:#27403c;--acc:#f0b43a;--accink:#2b1d00;--bad:#ff8a80;--ok:#5fd3a0;--bar:#5fd3a0;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{background:var(--bg)}
+main{max-width:480px;margin:0 auto;padding:16px 16px 96px}
+h1{font-size:22px;font-weight:800;margin:4px 0 14px}
+h2{font-size:15px;font-weight:600;margin:20px 0 8px;color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.clock{font-size:56px;font-weight:800;letter-spacing:-1px;text-align:center;font-variant-numeric:tabular-nums;margin:6px 0}
+.sub{text-align:center;color:var(--mute);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 14px;border-radius:999px;font:inherit;font-size:14px;cursor:pointer}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip.strict.on{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn{width:100%;border:0;border-radius:12px;padding:16px;font:inherit;font-size:17px;font-weight:600;cursor:pointer;background:var(--acc);color:var(--accink);margin-top:16px}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.lock{border:2px solid var(--bad)}
+.lock b{color:var(--bad)}
+.warn{background:color-mix(in srgb,var(--bad) 14%,transparent);border-radius:10px;padding:10px 12px;font-size:14px;margin-top:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stat .v{font-size:26px;font-weight:800}
+.stat .l{font-size:13px;color:var(--mute)}
+.row{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:15px}
+.row:last-child{border-bottom:0}
+.row small{display:block;color:var(--mute);font-size:12.5px;margin-top:2px}
+.row .t{font-weight:600;white-space:nowrap}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;border:0;background:transparent;color:var(--mute);font:inherit;font-size:15px;padding:16px 0;cursor:pointer}
+nav button.on{color:var(--ink);font-weight:800;box-shadow:inset 0 3px 0 var(--acc)}
+.chart{overflow-x:auto}
+svg text{fill:var(--mute);font-family:inherit;font-size:11px}
+svg .val{fill:var(--ink);font-weight:600}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px}.cal .h{text-align:center;font-size:12px;color:var(--mute)}.day{min-height:48px;border-radius:8px;padding:4px;border:1px solid var(--line);font-size:12px}.day i{font-style:normal;color:var(--mute);font-size:11px}.day b{display:block;font-weight:600;margin-top:2px}.mn{display:flex;align-items:center;justify-content:space-between;gap:8px}.mn span{font-weight:800;font-size:17px}
+.tdadd{display:flex;gap:8px}.tdadd input{flex:1;min-width:0;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px;font:inherit;font-size:16px}.tdl{display:flex;gap:10px;align-items:flex-start;flex:1;cursor:pointer}.tdl input{width:20px;height:20px;margin-top:1px;accent-color:var(--ok)}.dn{text-decoration:line-through;color:var(--mute)}
+.hide{display:none}
+.empty{color:var(--mute);font-size:14px;padding:6px 0}
+</style>
+</head>
+<body>
+<main>
+  <section id="vTimer"></section>
+  <section id="vStats" class="hide"></section>
+  <section id="vTodo" class="hide"></section>
+</main>
+<nav>
+  <button id="nT" class="on" onclick="go('T')">Padhai</button>
+  <button id="nS" onclick="go('S')">Stats</button>
+  <button id="nD" onclick="go('D')">To-do</button>
+</nav>
+<script>
+const KEY='padhai-v1';
+let S=null;
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+S=S||{sessions:[],active:null,vis:{}};S.todos=S.todos||[];
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const pad=n=>String(n).padStart(2,'0');
+const dkey=t=>{const d=new Date(t);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+const fmt=s=>{s=Math.max(0,Math.round(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?h+'h '+m+'m':m+'m'};
+const clock=s=>{s=Math.max(0,Math.floor(s));return [Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(pad).join(':')};
+const SUBJ=['Physics','Chemistry','Biology','Revision','Mock test'];
+let subject='Biology',mode='normal',dur=60,tab='T',banner='';
+
+function go(t){tab=t;$('vTimer').classList.toggle('hide',t!=='T');$('vStats').classList.toggle('hide',t!=='S');$('vTodo').classList.toggle('hide',t!=='D');['T','S','D'].forEach(k=>$('n'+k).classList.toggle('on',t===k));if(t==='S')renderStats();else if(t==='D')renderTodo();else renderTimer()}
+function $(id){return document.getElementById(id)}
+function todayTotal(){const k=dkey(Date.now());return S.sessions.filter(x=>x.d===k).reduce((a,x)=>a+x.s,0)}
+
+function renderTimer(){
+  const el=$('vTimer'),a=S.active;
+  if(!a){
+    el.innerHTML=`<h1>dr.n28</h1>
+    <div class="card">
+      <div class="sub">Aaj ki padhai</div>
+      <div class="clock">${fmt(todayTotal())||'0m'}</div>
+    </div>
+    <h2>Subject</h2>
+    <div class="chips">${SUBJ.map(s=>`<button class="chip ${s===subject?'on':''}" onclick="subject='${s}';renderTimer()">${s}</button>`).join('')}</div>
+    <h2>Mode</h2>
+    <div class="chips">
+      <button class="chip ${mode==='normal'?'on':''}" onclick="mode='normal';renderTimer()">Normal</button>
+      <button class="chip ${mode==='pomo'?'on':''}" onclick="mode='pomo';renderTimer()">Pomodoro</button>
+      <button class="chip strict ${mode==='strict'?'on':''}" onclick="mode='strict';renderTimer()">Strict mode</button>
+    </div>
+    ${mode==='strict'?`<h2>Session kitni der ka?</h2>
+    <div class="chips">${[30,60,90,120,180].map(m=>`<button class="chip ${dur===m?'on':''}" onclick="dur=${m};renderTimer()">${m} min</button>`).join('')}</div>
+    <div class="warn">Strict mode mein session shuru hone ke baad rukna ya band karna possible nahi hai. Timer poora hone par hi khulega.</div>`:''}
+    <button class="btn" onclick="start()">${mode==='strict'?'Strict session shuru karo':'Padhai shuru karo'}</button>`;
+    return;
+  }
+  const el2=elap(a);
+  if(a.strict){
+    const left=a.dur-el2;
+    el.innerHTML=`<h1>Strict mode ON</h1>
+    <div class="card lock">
+      <div class="sub">${a.subject}</div>
+      <div class="clock" id="clk">${clock(left)}</div>
+      <div class="sub">Baaki time. <b>Abhi exit nahi ho sakta.</b></div>
+      ${a.leaves?`<div class="warn">Tum ${a.leaves} baar app se bahar gaye. Wapis focus karo.</div>`:''}
+      ${banner?`<div class="warn">${banner}</div>`:''}
+    </div>
+    <p class="sub">Is app ko khula rakho aur screen par rehne do. Phone ko dusri app mein mat chalao.</p>`;
+  }else{
+    const pp=a.pomo?pomo(el2):null;
+    el.innerHTML=`<h1>${a.subject}</h1>
+    <div class="card">
+      <div class="sub" id="lbl">${a.pa?'Break chal raha hai, timer ruka hua hai':pp?(pp.brk?'Break time (5 min)':'Focus (25 min)'):'Padhai chal rahi hai'}</div>
+      <div class="clock" id="clk">${clock(pp?pp.left:el2)}</div>
+    </div>
+    <button class="btn alt" onclick="toggleBreak()">${a.pa?'Break khatam, wapis padhai':'Break lo'}</button>
+    <button class="btn" onclick="finish()">Band karo aur save karo</button>`;
+  }
+}
+
+function elap(a){const now=a.pa||Date.now();return (now-a.start-(a.pt||0))/1000}
+function toggleBreak(){const a=S.active;if(!a||a.strict)return;if(a.pa){a.pt=(a.pt||0)+Date.now()-a.pa;a.pa=0}else a.pa=Date.now();save();renderTimer()}
+function pomo(e){const p=e%1800;return {focus:Math.floor(e/1800)*1500+Math.min(p,1500),brk:p>=1500,left:p<1500?1500-p:1800-p}}
+function start(){
+  S.active={start:Date.now(),subject,strict:mode==='strict',pomo:mode==='pomo',dur:dur*60,leaves:0};
+  save();banner='';
+  if(S.active.strict){try{document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}}
+  renderTimer();
+}
+function finish(){
+  const a=S.active;if(!a)return;
+  let sec=elap(a);
+  if(a.strict)sec=Math.min(sec,a.dur);
+  if(a.pomo)sec=pomo(sec).focus;
+  if(sec>=30)S.sessions.push({d:dkey(a.start),s:Math.round(sec),sub:a.subject,strict:a.strict,lv:a.leaves||0});
+  S.active=null;save();banner='';
+  try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}
+  renderTimer();
+}
+
+let n=0;
+setInterval(()=>{
+  if(!document.hidden){const k=dkey(Date.now());S.vis[k]=(S.vis[k]||0)+1;if(++n%10===0)save()}
+  const a=S.active;
+  if(a){
+    const e=elap(a);
+    if(a.strict&&e>=a.dur){finish();return}
+    const c=$('clk');if(a.pomo){const q=pomo(e);if(c)c.textContent=clock(q.left);const l=$('lbl');if(l&&!a.pa)l.textContent=q.brk?'Break time (5 min)':'Focus (25 min)'}else if(c)c.textContent=a.strict?clock(a.dur-e):clock(e);
+  }
+},1000);
+
+document.addEventListener('visibilitychange',()=>{
+  const a=S.active;
+  if(a&&a.strict){
+    if(document.hidden){a.leaves=(a.leaves||0)+1;save()}
+    else{banner='Tum app se bahar gaye the. Ye count ho gaya hai.';renderTimer()}
+  }
+  if(!document.hidden&&tab==='T'&&!a)renderTimer();
+});
+window.addEventListener('beforeunload',e=>{if(S.active&&S.active.strict){e.preventDefault();e.returnValue=''}save()});
+
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let td=dkey(Date.now());
+function tdshift(n){const d=new Date(td+'T00:00:00');d.setDate(d.getDate()+n);td=dkey(d);renderTodo()}
+function tdadd(){const i=$('tdin'),t=i.value.trim();if(!t)return;S.todos.push({id:Date.now()*1000+Math.floor(Math.random()*1000),d:td,t:t.slice(0,120),x:0});save();renderTodo();setTimeout(()=>{const j=$('tdin');if(j)j.focus()},0)}
+function tdtog(id){const o=S.todos.find(x=>x.id===id);if(o){o.x=o.x?0:1;save();renderTodo()}}
+function tddel(id){S.todos=S.todos.filter(x=>x.id!==id);save();renderTodo()}
+function renderTodo(){
+  const el=$('vTodo'),L=S.todos.filter(x=>x.d===td),done=L.filter(x=>x.x).length;
+  const d=new Date(td+'T00:00:00'),label=td===dkey(Date.now())?'Aaj':d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'short'});
+  el.innerHTML=`<h1>To-do list</h1>
+  <div class="mn"><button class="chip" onclick="tdshift(-1)" aria-label="Pichhla din">&lsaquo;</button><span>${label}</span><button class="chip" onclick="tdshift(1)" aria-label="Agla din">&rsaquo;</button></div>
+  <div class="sub" style="margin:8px 0">${L.length?done+' / '+L.length+' kaam ho gaye':'Is din ka koi kaam nahi'}</div>
+  <div class="tdadd"><input id="tdin" type="text" maxlength="120" placeholder="Kaam likho, jaise Physics ch-5 MCQ" onkeydown="if(event.key==='Enter')tdadd()"><button class="chip on" onclick="tdadd()">Add</button></div>
+  <div class="card" style="margin-top:12px">${L.length?L.map(o=>`<div class="row"><label class="tdl"><input type="checkbox" ${o.x?'checked':''} onchange="tdtog(${o.id})"><span class="${o.x?'dn':''}">${esc(o.t)}</span></label><button class="chip" onclick="tddel(${o.id})" aria-label="Hatao">&times;</button></div>`).join(''):'<div class="empty">Abhi list khali hai. Upar kaam likhke Add dabao.</div>'}</div>`;
+}
+let yo=0;
+function yshift(n){yo=Math.min(0,yo+n);renderStats()}
+function yearHTML(){
+  const now=new Date(),y=now.getFullYear()+yo,mt=Array(12).fill(0),dset={};
+  S.sessions.forEach(x=>{const d=new Date(x.d+'T00:00:00');if(d.getFullYear()===y){mt[d.getMonth()]+=x.s;dset[x.d]=1}});
+  const tot=mt.reduce((a,b)=>a+b,0),ds=Object.keys(dset).length,upto=yo===0?now.getMonth()+1:12,mx=Math.max(...mt,36000);
+  const bars=mt.map((v,i)=>{const h=Math.round(v/mx*90),x=8+i*27;return `<rect x="${x}" y="${110-h}" width="20" height="${h||2}" rx="3" fill="${v?'var(--bar)':'var(--line)'}"/><text x="${x+10}" y="${104-h}" text-anchor="middle" class="val">${v?Math.round(v/3600):''}</text><text x="${x+10}" y="128" text-anchor="middle">${'JFMAMJJASOND'[i]}</text>`}).join('');
+  const bi=mt.indexOf(Math.max(...mt)),bm=tot?new Date(y,bi,1).toLocaleDateString('en-IN',{month:'short'}):'-';
+  return `<h2>Saal bhar ka data</h2>
+  <div class="mn"><button class="chip" onclick="yshift(-1)" aria-label="Pichhla saal">&lsaquo;</button><span>${y}</span><button class="chip" onclick="yshift(1)" aria-label="Agla saal" ${yo===0?'disabled':''}>&rsaquo;</button></div>
+  <div class="grid" style="margin-top:10px">
+    <div class="stat"><div class="v">${Math.round(tot/3600)}h</div><div class="l">Saal ki total padhai</div></div>
+    <div class="stat"><div class="v">${ds} din</div><div class="l">Padhai wale din</div></div>
+    <div class="stat"><div class="v">${fmt(tot/upto)}</div><div class="l">Mahine ka average</div></div>
+    <div class="stat"><div class="v">${bm}</div><div class="l">Sabse achha mahina</div></div>
+  </div>
+  <div class="card chart" style="margin-top:10px"><svg viewBox="0 0 336 136" width="100%" role="img" aria-label="Mahine ke hisaab se padhai (ghante)">${bars}</svg></div>
+  <div class="sub" style="margin-top:6px">Bars ke upar ghante likhe hain</div>`;
+}
+let mo=0;
+function mshift(n){mo=Math.min(0,mo+n);renderStats()}
+function monthHTML(){
+  const now=new Date(),f=new Date(now.getFullYear(),now.getMonth()+mo,1),y=f.getFullYear(),m=f.getMonth(),nd=new Date(y,m+1,0).getDate();
+  const by={},sub={};let tot=0,ds=0,best=0;
+  S.sessions.forEach(x=>{const d=new Date(x.d+'T00:00:00');if(d.getFullYear()===y&&d.getMonth()===m){by[d.getDate()]=(by[d.getDate()]||0)+x.s;sub[x.sub]=(sub[x.sub]||0)+x.s;tot+=x.s}});
+  Object.values(by).forEach(v=>{ds++;best=Math.max(best,v)});
+  const passed=mo===0?now.getDate():nd,lead=(f.getDay()+6)%7;
+  let cells='MTWTFSS'.split('').map(c=>`<div class="h">${c}</div>`).join('');
+  for(let i=0;i<lead;i++)cells+='<div></div>';
+  for(let d=1;d<=nd;d++){const v=by[d]||0,a=Math.min(1,v/21600);cells+=`<div class="day" style="${v?`background:color-mix(in srgb,var(--bar) ${20+Math.round(a*60)}%,transparent)`:''}"><i>${d}</i><b>${v?(v>=3600?(v/3600).toFixed(1)+'h':Math.round(v/60)+'m'):''}</b></div>`}
+  const subs=Object.entries(sub).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="row"><div>${k}</div><div class="t">${fmt(v)}</div></div>`).join('');
+  return `<h2>Mahine ka data</h2>
+  <div class="mn"><button class="chip" onclick="mshift(-1)" aria-label="Pichhla mahina">&lsaquo;</button><span>${f.toLocaleDateString('en-IN',{month:'long',year:'numeric'})}</span><button class="chip" onclick="mshift(1)" aria-label="Agla mahina" ${mo===0?'disabled':''}>&rsaquo;</button></div>
+  <div class="grid" style="margin-top:10px">
+    <div class="stat"><div class="v">${fmt(tot)}</div><div class="l">Mahine ki total padhai</div></div>
+    <div class="stat"><div class="v">${fmt(tot/passed)}</div><div class="l">Daily average</div></div>
+    <div class="stat"><div class="v">${ds} din</div><div class="l">Padhai wale din</div></div>
+    <div class="stat"><div class="v">${fmt(best)}</div><div class="l">Sabse achha din</div></div>
+  </div>
+  <div class="cal">${cells}</div>
+  ${subs?`<h2>Subject ke hisaab se</h2><div class="card">${subs}</div>`:''}`;
+}
+function renderStats(){
+  const el=$('vStats');
+  const now=new Date(),days=[];
+  for(let i=6;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);days.push({k:dkey(d),w:d.toLocaleDateString('en-IN',{weekday:'short'}),s:0})}
+  const by={};S.sessions.forEach(x=>{by[x.d]=by[x.d]||{s:0,sub:{}};by[x.d].s+=x.s;by[x.d].sub[x.sub]=(by[x.d].sub[x.sub]||0)+x.s});
+  days.forEach(d=>d.s=(by[d.k]||{s:0}).s);
+  const sum7=days.reduce((a,d)=>a+d.s,0);
+  const keys=Object.keys(by),total=keys.reduce((a,k)=>a+by[k].s,0);
+  const avgAll=keys.length?total/keys.length:0;
+  let streak=0;const t=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  if(!by[dkey(t)])t.setDate(t.getDate()-1);
+  while(by[dkey(t)]){streak++;t.setDate(t.getDate()-1)}
+  const best=keys.reduce((a,k)=>Math.max(a,by[k].s),0);
+  const visToday=S.vis[dkey(now)]||0;
+  const vk=Object.keys(S.vis),visAvg=vk.length?vk.reduce((a,k)=>a+S.vis[k],0)/vk.length:0;
+  const max=Math.max(3600,...days.map(d=>d.s));
+  const bars=days.map((d,i)=>{const h=Math.round(d.s/max*90),x=12+i*44;return `<rect x="${x}" y="${110-h}" width="30" height="${h||2}" rx="4" fill="${d.s?'var(--bar)':'var(--line)'}"/><text x="${x+15}" y="${104-h}" text-anchor="middle" class="val">${d.s?fmt(d.s):''}</text><text x="${x+15}" y="128" text-anchor="middle">${d.w}</text>`}).join('');
+  const list=keys.sort().reverse().slice(0,14).map(k=>{const d=new Date(k+'T00:00:00');return `<div class="row"><div>${d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'})}<small>${Object.entries(by[k].sub).map(([a,b])=>a+' '+fmt(b)).join(', ')}</small></div><div class="t">${fmt(by[k].s)}</div></div>`}).join('');
+  el.innerHTML=`<h1>Stats</h1>
+  <div class="grid">
+    <div class="stat"><div class="v">${fmt(todayTotal())}</div><div class="l">Aaj</div></div>
+    <div class="stat"><div class="v">${fmt(sum7/7)}</div><div class="l">Daily average (7 din)</div></div>
+    <div class="stat"><div class="v">${fmt(avgAll)}</div><div class="l">Average (padhai wale din)</div></div>
+    <div class="stat"><div class="v">${streak} din</div><div class="l">Streak</div></div>
+    <div class="stat"><div class="v">${fmt(best)}</div><div class="l">Sabse achha din</div></div>
+    <div class="stat"><div class="v">${fmt(total)}</div><div class="l">Total padhai</div></div>
+  </div>
+  <h2>Pichhle 7 din</h2>
+  <div class="card chart"><svg viewBox="0 0 320 136" width="100%" role="img" aria-label="Pichhle 7 din ki padhai">${bars}</svg></div>
+  <h2>Is app ka screen time</h2>
+  <div class="grid">
+    <div class="stat"><div class="v">${fmt(visToday)}</div><div class="l">Aaj</div></div>
+    <div class="stat"><div class="v">${fmt(visAvg)}</div><div class="l">Daily average</div></div>
+  </div>
+  ${monthHTML()}${yearHTML()}
+  <h2>Din ke hisaab se</h2>
+  <div class="card">${list||'<div class="empty">Abhi koi session save nahi hua. Pehla session shuru karo.</div>'}</div>`;
+}
+renderTimer();
+</script>
+</body>
+</html>
